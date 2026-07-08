@@ -1,0 +1,18 @@
+# Python
+__pycache__/
+*.pyc
+*.pyo
+*.pyd
+
+# Virtual Environment
+.venv/
+
+# VS Code
+.vscode/
+
+# Streamlit Cache
+.streamlit/secrets.toml
+
+# OS
+.DS_Store
+Thumbs.db

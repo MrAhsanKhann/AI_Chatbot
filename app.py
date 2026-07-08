@@ -10,7 +10,7 @@ from config import (
 )
 
 # =====================================
-# Page Configuration
+# Page Config
 # =====================================
 
 st.set_page_config(
@@ -46,11 +46,7 @@ with st.sidebar:
         len(st.session_state.messages)
     )
 
-    st.markdown("---")
-
-    st.success("🟢 Ollama Connected")
-
-    st.info("Running Locally")
+    st.success("🟢 Connected")
 
     st.markdown("---")
 
@@ -66,7 +62,7 @@ st.title(APP_TITLE)
 st.caption(APP_CAPTION)
 
 # =====================================
-# Display Previous Messages
+# Show Previous Messages
 # =====================================
 
 for message in st.session_state.messages:
@@ -78,53 +74,53 @@ for message in st.session_state.messages:
 # Chat Input
 # =====================================
 
-user_prompt = st.chat_input("Type your message...")
+prompt = st.chat_input("Ask me anything...")
 
-if user_prompt:
+if prompt:
 
+    # ------------------------
     # Save User Message
+    # ------------------------
+
     st.session_state.messages.append(
         {
             "role": "user",
-            "content": user_prompt
+            "content": prompt
         }
     )
 
-    # Display User Message
     with st.chat_message("user"):
-        st.markdown(user_prompt)
+        st.markdown(prompt)
 
-    try:
+    # ------------------------
+    # AI Streaming Response
+    # ------------------------
 
-        with st.spinner("🤖 AI is thinking..."):
+    history = st.session_state.messages[-8:]
 
-            # Send only recent conversation
-            history = st.session_state.messages[-8:]
+    with st.chat_message("assistant"):
 
-            ai_reply = ai_engine.get_ai_response(history)
+        placeholder = st.empty()
 
-        # Save AI Response
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": ai_reply
-            }
-        )
+        full_response = ""
 
-        # Display AI Response
-        with st.chat_message("assistant"):
-            st.markdown(ai_reply)
+        try:
 
-    except Exception as e:
+            for chunk in ai_engine.stream_ai_response(history):
 
-        error_message = f"❌ Error:\n\n{str(e)}"
+                full_response += chunk
 
-        st.session_state.messages.append(
-            {
-                "role": "assistant",
-                "content": error_message
-            }
-        )
+                placeholder.markdown(full_response + "▌")
 
-        with st.chat_message("assistant"):
-            st.error(error_message)
+            placeholder.markdown(full_response)
+
+            st.session_state.messages.append(
+                {
+                    "role": "assistant",
+                    "content": full_response
+                }
+            )
+
+        except Exception as e:
+
+            st.error(str(e))

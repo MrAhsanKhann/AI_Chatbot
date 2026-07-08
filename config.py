@@ -1,8 +1,8 @@
 APP_TITLE = "🤖 AI Chatbot"
 
-APP_CAPTION = "Powered by Ollama + Llama 3.2"
+APP_CAPTION = "Powered by Groq + Llama"
 
-MODEL_NAME = "llama3.2:1b"
+MODEL_NAME = "llama-3.1-8b-instant"
 
 PAGE_ICON = "🤖"
 
